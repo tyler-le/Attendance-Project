@@ -46,7 +46,7 @@ def markAttendance(name):
         # if not present, then add current time into list
         if name not in nameList:
             now = datetime.now()
-            dateString = now.strftime('%H:%M:%S')
+            dateString = now.strftime('%b %m at %I:%M %p')
             f.writelines(f'\n{name},{dateString}')
 
 
