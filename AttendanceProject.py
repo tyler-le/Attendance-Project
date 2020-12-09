@@ -4,53 +4,54 @@ import face_recognition
 import os
 from datetime import datetime
 
-# import images automatically from ImagesAttendance folder
-path = 'ImagesAttendance'
-images = []
-classNames = []
-myList = os.listdir(path)
-print(myList)
+# import images automatically from BaseImagesOfStudents folder
+path = 'BaseImagesOfStudents'
+imagesOfStudents = []
+namesOfStudents = []
+listWithJPGExtension = os.listdir(path)
+print(listWithJPGExtension)
 
-# go through ImagesAttendance folder and grab names
-for cl in myList:
-    currImg = cv2.imread(f'{path}/{cl}')
-    images.append(currImg)
+# go through BaseImagesOfStudents folder and grab names
+for fileName in listWithJPGExtension:
+    currImg = cv2.imread(f'{path}/{fileName}')
+    imagesOfStudents.append(currImg)
     # remove .jpg from name
-    classNames.append(os.path.splitext(cl)[0])
-print(classNames)
+    namesOfStudents.append(os.path.splitext(fileName)[0])
+
+print(namesOfStudents)
 
 
 # find encodings for each image and put in encodeList
 def findEncodings(images):
-    encodeList = []
-    for img in images:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        encode = face_recognition.face_encodings(img)[0]
-        encodeList.append(encode)
-    return encodeList
+    listOfEncodings = []
+    for image in images:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        encoding = face_recognition.face_encodings(image)[0]
+        listOfEncodings.append(encoding)
+    return listOfEncodings
 
 
-def markAttendance(name):
+def markAttendance(studentName):
     # open csv with rw permissions
     with open('Attendance.csv', 'r+') as f:
-        myDataList = f.readlines()
+        myCSVList = f.readlines()
         nameList = []
 
         # iterate through each line and split between commas
-        for line in myDataList:
+        for line in myCSVList:
             entry = line.split(',')
             # since it splits name and time, we want name list to only have first entry (name)
             nameList.append(entry[0])
 
         # check if current name is present or not
         # if not present, then add current time into list
-        if name not in nameList:
+        if studentName not in nameList:
             now = datetime.now()
             dateString = now.strftime('%b %m at %I:%M %p')
-            f.writelines(f'\n{name},{dateString}')
+            f.writelines(f'\n{studentName},{dateString}')
 
 
-encodeListKnown = findEncodings(images)
+encodeListKnown = findEncodings(imagesOfStudents)
 print('Encoding Complete')
 
 # initialize webcam
@@ -58,18 +59,18 @@ cap = cv2.VideoCapture(0)
 
 while True:
     success, img = cap.read()
-    imgS = cv2.resize(img, (0, 0), None, 0.25, 0.25)
-    imgS = cv2.cvtColor(imgS, cv2.COLOR_BGR2RGB)
+    scaledImage = cv2.resize(img, (0, 0), None, 0.25, 0.25)
+    scaledImage = cv2.cvtColor(scaledImage, cv2.COLOR_BGR2RGB)
 
     # find face location and send each location to encoding
-    facesCurrFrame = face_recognition.face_locations(imgS)
-    encodeCurrFrame = face_recognition.face_encodings(imgS, facesCurrFrame)
+    facesAtCurrentFrame = face_recognition.face_locations(scaledImage)
+    encodingsAtCurrentFrame = face_recognition.face_encodings(scaledImage, facesAtCurrentFrame)
     # iterate through all faces found in current frame
     # compare all these faces with all the encodings in encodeListKnown
     # grabs one faceLoc in facesCurrFrame and grab encoding from encodeCurrFrame
-    for encodeFace, faceLoc in zip(encodeCurrFrame, facesCurrFrame):
-        matches = face_recognition.compare_faces(encodeListKnown, encodeFace)
-        faceDis = face_recognition.face_distance(encodeListKnown, encodeFace)
+    for faceEncoding, faceLocation in zip(encodingsAtCurrentFrame, facesAtCurrentFrame):
+        matches = face_recognition.compare_faces(encodeListKnown, faceEncoding)
+        faceDis = face_recognition.face_distance(encodeListKnown, faceEncoding)
         # print(faceDis)
         # find index at lowest encoding value
         matchIndex = np.argmin(faceDis)
@@ -77,10 +78,10 @@ while True:
         # now we know who the person is.
         # display name and display rectangle
         if matches[matchIndex]:
-            name = classNames[matchIndex].upper()
+            name = namesOfStudents[matchIndex].upper()
             # print(name)
 
-            y1, x2, y2, x1 = faceLoc
+            y1, x2, y2, x1 = faceLocation
             # multiply by 4 since we scaled down image to 1/4 the size in line 39
             y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
 
