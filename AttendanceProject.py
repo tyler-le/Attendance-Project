@@ -8,8 +8,9 @@ from datetime import datetime
 path = 'BaseImagesOfStudents'
 imagesOfStudents = []
 namesOfStudents = []
+hereNameList = []
+
 listWithJPGExtension = os.listdir(path)
-print(listWithJPGExtension)
 
 # go through BaseImagesOfStudents folder and grab names
 for fileName in listWithJPGExtension:
@@ -35,30 +36,31 @@ def markAttendance(studentName):
     # open csv with rw permissions
     with open('Attendance.csv', 'r+') as f:
         myCSVList = f.readlines()
-        nameList = []
 
         # iterate through each line and split between commas
         for line in myCSVList:
             entry = line.split(',')
             # since it splits name and time, we want name list to only have first entry (name)
-            nameList.append(entry[0])
+            hereNameList.append(entry[0])
 
         # check if current name is present or not
         # if not present, then add current time into list
-        if studentName not in nameList:
+        if studentName not in hereNameList:
             now = datetime.now()
             dateString = now.strftime('%b %d at %I:%M %p')
             f.writelines(f'\n{studentName},{dateString}')
 
 
 encodeListKnown = findEncodings(imagesOfStudents)
-print('Encoding Complete')
+print('Finished Encoding...')
 
 # initialize webcam
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0) # for webcam
 
 while True:
-    success, img = cap.read()
+    success, img = cap.read() # for webcam
+    # img = cv2.imread('ScreenshotOfZoomClassForAttendance/zoomCelebrity.jpg', 0)  # for screenshot
+
     scaledImage = cv2.resize(img, (0, 0), None, 0.25, 0.25)
     scaledImage = cv2.cvtColor(scaledImage, cv2.COLOR_BGR2RGB)
 
@@ -71,18 +73,18 @@ while True:
     for faceEncoding, faceLocation in zip(encodingsAtCurrentFrame, facesAtCurrentFrame):
         matches = face_recognition.compare_faces(encodeListKnown, faceEncoding)
         faceDis = face_recognition.face_distance(encodeListKnown, faceEncoding)
-        # print(faceDis)
+
         # find index at lowest encoding value
         matchIndex = np.argmin(faceDis)
 
         # now we know who the person is.
         # display name and display rectangle
         if matches[matchIndex]:
-            name = namesOfStudents[matchIndex].upper()
+            name = namesOfStudents[matchIndex]
             # print(name)
 
             y1, x2, y2, x1 = faceLocation
-            # multiply by 4 since we scaled down image to 1/4 the size in line 39
+            # multiply by 4 since we scaled down image to 1/4 the size previously
             y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
 
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -91,5 +93,6 @@ while True:
 
             markAttendance(name)
 
-        cv2.imshow('Webcam', img)
+        imageResized = cv2.resize(img, (640, 360))
+        cv2.imshow("Results", imageResized)
         cv2.waitKey(1)
