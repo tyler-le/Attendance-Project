@@ -55,11 +55,11 @@ encodeListKnown = findEncodings(imagesOfStudents)
 print('Finished Encoding...')
 
 # initialize webcam
-cap = cv2.VideoCapture(0) # for webcam
+#cap = cv2.VideoCapture(0) # for webcam
 
 while True:
-    success, img = cap.read() # for webcam
-    # img = cv2.imread('ScreenshotOfZoomClassForAttendance/zoomCelebrity.jpg', 0)  # for screenshot
+    #success, img = cap.read() # for webcam
+    img = cv2.imread('ScreenshotOfZoomClassForAttendance/zoomCelebrity.jpg')  # for screenshot
 
     scaledImage = cv2.resize(img, (0, 0), None, 0.25, 0.25)
     scaledImage = cv2.cvtColor(scaledImage, cv2.COLOR_BGR2RGB)
