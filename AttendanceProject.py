@@ -7,7 +7,7 @@ from datetime import datetime
 # import images automatically from BaseImagesOfStudents folder
 path = 'BaseImagesOfStudents'
 imagesOfStudents = []
-namesOfStudents = []
+names_of_students = []
 hereNameList = []
 
 listWithJPGExtension = os.listdir(path)
@@ -17,9 +17,9 @@ for fileName in listWithJPGExtension:
     currImg = cv2.imread(f'{path}/{fileName}')
     imagesOfStudents.append(currImg)
     # remove .jpg from name
-    namesOfStudents.append(os.path.splitext(fileName)[0])
+    names_of_students.append(os.path.splitext(fileName)[0])
 
-print(namesOfStudents)
+print(f'List of entire class: {names_of_students}')
 
 
 # find encodings for each image and put in encodeList
@@ -51,48 +51,44 @@ def markAttendance(studentName):
             f.writelines(f'\n{studentName},{dateString}')
 
 
-encodeListKnown = findEncodings(imagesOfStudents)
+known_encodings = findEncodings(imagesOfStudents)
 print('Finished Encoding...')
 
 # initialize webcam
-#cap = cv2.VideoCapture(0) # for webcam
+cap = cv2.VideoCapture(0)  # for webcam
 
 while True:
-    #success, img = cap.read() # for webcam
-    img = cv2.imread('ScreenshotOfZoomClassForAttendance/zoomCelebrity.jpg')  # for screenshot
+    success, img = cap.read()  # for webcam
+    # img = cv2.imread('ScreenshotOfZoomClassForAttendance/zoomCelebrity.jpg')  # for screenshot
 
-    scaledImage = cv2.resize(img, (0, 0), None, 0.25, 0.25)
-    scaledImage = cv2.cvtColor(scaledImage, cv2.COLOR_BGR2RGB)
+    img_to_RGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # find face location and send each location to encoding
-    facesAtCurrentFrame = face_recognition.face_locations(scaledImage)
-    encodingsAtCurrentFrame = face_recognition.face_encodings(scaledImage, facesAtCurrentFrame)
+    faces_at_current_frame = face_recognition.face_locations(img_to_RGB)
+    encodings_at_current_frame = face_recognition.face_encodings(img_to_RGB, faces_at_current_frame)
+
     # iterate through all faces found in current frame
-    # compare all these faces with all the encodings in encodeListKnown
+    # compare all these faces with all the encodings in known_encodings
     # grabs one faceLoc in facesCurrFrame and grab encoding from encodeCurrFrame
-    for faceEncoding, faceLocation in zip(encodingsAtCurrentFrame, facesAtCurrentFrame):
-        matches = face_recognition.compare_faces(encodeListKnown, faceEncoding)
-        faceDis = face_recognition.face_distance(encodeListKnown, faceEncoding)
+    for face_encoding, face_location in zip(encodings_at_current_frame, faces_at_current_frame):
+        matches = face_recognition.compare_faces(known_encodings, face_encoding)
+        face_dist = face_recognition.face_distance(known_encodings, face_encoding)
 
         # find index at lowest encoding value
-        matchIndex = np.argmin(faceDis)
+        match_index = np.argmin(face_dist)
 
         # now we know who the person is.
         # display name and display rectangle
-        if matches[matchIndex]:
-            name = namesOfStudents[matchIndex]
-            # print(name)
+        if matches[match_index]:
+            name = names_of_students[match_index]
 
-            y1, x2, y2, x1 = faceLocation
-            # multiply by 4 since we scaled down image to 1/4 the size previously
-            y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
+            top, right, bottom, left = face_location
 
-            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0, 255, 0), cv2.FILLED)
-            cv2.putText(img, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+            cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
+            cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+            cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
 
             markAttendance(name)
 
-        imageResized = cv2.resize(img, (640, 360))
-        cv2.imshow("Results", imageResized)
+        cv2.imshow("Results", img)
         cv2.waitKey(1)
