@@ -8,7 +8,7 @@ from datetime import datetime
 path = 'BaseImagesOfStudents'
 imagesOfStudents = []
 names_of_students = []
-hereNameList = []
+students_present = []
 
 listWithJPGExtension = os.listdir(path)
 
@@ -41,11 +41,11 @@ def markAttendance(studentName):
         for line in myCSVList:
             entry = line.split(',')
             # since it splits name and time, we want name list to only have first entry (name)
-            hereNameList.append(entry[0])
+            students_present.append(entry[0])
 
         # check if current name is present or not
         # if not present, then add current time into list
-        if studentName not in hereNameList:
+        if studentName not in students_present:
             now = datetime.now()
             dateString = now.strftime('%b %d at %I:%M %p')
             f.writelines(f'\n{studentName},{dateString}')
