@@ -18,11 +18,11 @@
 </ol>
 
 
-  {{ dropzone.create(action='/uploads') }}
+  {{ dropzone.create(action='/uploads-students') }}
+  {{ dropzone.create(action='/uploads-class') }}
+
   {{ dropzone.load_js() }}
   {{ dropzone.config() }}
-  {# You can get the success response from server like this: #}
-  {#{ dropzone.config(custom_options="success: function(file, response){console.log(response);}") }#}
   <a href="/takeAttendance.html"><button>Take Attendance</button></a>
 </body>
 </html>

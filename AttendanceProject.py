@@ -4,19 +4,19 @@ import face_recognition
 import os
 from datetime import datetime
 
-# import images automatically from BaseImagesOfStudents folder
+# import students automatically from BaseImagesOfStudents folder
 # path = 'BaseImagesOfStudents'
 path = 'static/uploads'
 imagesOfStudents = []
 names_of_students = []
 students_present = []
-listWithJPGExtension = os.listdir(path)
+listWithJPGExtension = os.listdir(f'{path}/students')
 
 
 def getStudentNames():
     # go through BaseImagesOfStudents folder and grab names
     for fileName in listWithJPGExtension:
-        currImg = cv2.imread(f'{path}/{fileName}')
+        currImg = cv2.imread(f'{path}/students/{fileName}')
         imagesOfStudents.append(currImg)
         # remove .jpg from name
         names_of_students.append(os.path.splitext(fileName)[0])
@@ -67,7 +67,9 @@ print('Finished Encoding...')
 
 # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
 def processAttendance():
-    img = cv2.imread(f'{path}/class.jpg')
+    # img = cv2.imread(f'{path}/class.jpg')
+    # img = cv2.imread('ScreenshotOfZoomClassForAttendance/class.jpg')
+    img = cv2.imread(f'{path}/class/class.jpg')
 
     # find face location and send each location to encoding
     faces_at_current_frame = face_recognition.face_locations(img)
@@ -93,6 +95,6 @@ def processAttendance():
             cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
             cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
             cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
-            #markAttendance(name)
+            # markAttendance(name)
 
-        cv2.imwrite(os.path.join('static/uploads', 'result.jpg'), img)
+        cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)
