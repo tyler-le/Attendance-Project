@@ -13,6 +13,15 @@ students_present = []
 listWithJPGExtension = os.listdir(f'{path}/students')
 
 
+def folderHasImages():
+    if len(os.listdir(f'{path}/students')) == 0:
+        print("Directory is empty")
+        return False
+    else:
+        print("Directory is not empty")
+        return True
+
+
 def getStudentNames():
     # go through BaseImagesOfStudents folder and grab names
     for fileName in listWithJPGExtension:
@@ -59,42 +68,42 @@ def markAttendance(studentName):
         f.writelines(f'\n{studentName},{dateString}')
 
 
-getStudentNames()
-print(f'List of entire class: {names_of_students}')
-known_encodings = findEncodings(imagesOfStudents)
-print('Finished Encoding...')
+if folderHasImages():
+    getStudentNames()
+    print(f'List of entire class: {names_of_students}')
+    known_encodings = findEncodings(imagesOfStudents)
+    print('Finished Encoding...')
 
+    # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
+    def processAttendance():
+        # img = cv2.imread(f'{path}/class.jpg')
+        # img = cv2.imread('ScreenshotOfZoomClassForAttendance/class.jpg')
+        img = cv2.imread(f'{path}/class/class.jpg')
 
-# CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
-def processAttendance():
-    # img = cv2.imread(f'{path}/class.jpg')
-    # img = cv2.imread('ScreenshotOfZoomClassForAttendance/class.jpg')
-    img = cv2.imread(f'{path}/class/class.jpg')
+        # find face location and send each location to encoding
+        faces_at_current_frame = face_recognition.face_locations(img)
+        encodings_at_current_frame = face_recognition.face_encodings(img, faces_at_current_frame)
 
-    # find face location and send each location to encoding
-    faces_at_current_frame = face_recognition.face_locations(img)
-    encodings_at_current_frame = face_recognition.face_encodings(img, faces_at_current_frame)
+        # iterate through all faces found in current frame
+        # compare all these faces with all the encodings in known_encodings
+        # grabs one faceLoc in facesCurrFrame and grab encoding from encodeCurrFrame
+        for face_encoding, face_location in zip(encodings_at_current_frame, faces_at_current_frame):
+            matches = face_recognition.compare_faces(known_encodings, face_encoding)
+            face_dist = face_recognition.face_distance(known_encodings, face_encoding)
 
-    # iterate through all faces found in current frame
-    # compare all these faces with all the encodings in known_encodings
-    # grabs one faceLoc in facesCurrFrame and grab encoding from encodeCurrFrame
-    for face_encoding, face_location in zip(encodings_at_current_frame, faces_at_current_frame):
-        matches = face_recognition.compare_faces(known_encodings, face_encoding)
-        face_dist = face_recognition.face_distance(known_encodings, face_encoding)
+            # find index at lowest encoding value
+            match_index = np.argmin(face_dist)
 
-        # find index at lowest encoding value
-        match_index = np.argmin(face_dist)
+            # now we know who the person is.
+            # display name and display rectangle
+            if matches[match_index]:
+                name = names_of_students[match_index]
 
-        # now we know who the person is.
-        # display name and display rectangle
-        if matches[match_index]:
-            name = names_of_students[match_index]
+                top, right, bottom, left = face_location
 
-            top, right, bottom, left = face_location
+                cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
+                cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+                cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
+                # markAttendance(name)
 
-            cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
-            cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
-            cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
-            # markAttendance(name)
-
-        cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)
+            cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)

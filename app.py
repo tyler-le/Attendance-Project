@@ -1,15 +1,19 @@
 import os
+import time
+
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_dropzone import Dropzone
-import AttendanceProject
+# import AttendanceProject
+from AttendanceProject import processAttendance, getImgSrc
 
 app = Flask(__name__, static_folder='static')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['TEMPLATES_AUTO_RELOAD']=True
 UPLOAD_FOLDER = '/Users/tylerle/Zoom-Attendance/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 dropzone = Dropzone(app)
-src_images = AttendanceProject.getImgSrc()
+src_images = getImgSrc()
 
 
 @app.route('/uploads-students', methods=['GET', 'POST'])
@@ -40,12 +44,11 @@ def results():
 
 @app.route("/takeAttendance.html", methods=['GET', 'POST'])
 def takeAttendance():
-    AttendanceProject.processAttendance()
     filenames = []
     for filename in os.listdir('static/uploads/students'):
         if filename.endswith(".jpg"):
             filenames.append(os.path.join('static/uploads/students', filename))
-
+    processAttendance()
     return render_template('takeAttendance.html', filenames=filenames)
 
 
