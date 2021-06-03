@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zoomy | Upload Images</title>
+  {{ dropzone.load_css() }}
+  {{ dropzone.style('border: 2px dashed #0087F7; margin: 1%; min-height: 200px') }}
+</head>
+<body>
+<h1>Load Class Here</h1>
+
+<h1>Instructions</h1>
+<ol type="1">
+    <li>Gather each individual student's image and rename each as "&lt;student name&gt;.jpg"</li>
+    <li>Take a screenshot of your entire Zoom class and rename it "class.jpg"</li>
+    <li>Drag and drop all student's images and class.jpg</li>
+    <li>Take Attendance</li>
+</ol>
+
+
+  {{ dropzone.create(action='/uploads') }}
+  {{ dropzone.load_js() }}
+  {{ dropzone.config() }}
+  {# You can get the success response from server like this: #}
+  {#{ dropzone.config(custom_options="success: function(file, response){console.log(response);}") }#}
+  <a href="/takeAttendance.html"><button>Take Attendance</button></a>
+</body>
+</html>

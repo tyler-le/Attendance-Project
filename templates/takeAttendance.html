@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Take Attendance</title>
+</head>
+<body>
+    <h1>Take attendance</h1>
+    <h3>All Students in Class</h3>
+    {% for img_src in filenames: %}
+        <img src="{{img_src}}" width="200" height="200" />
+    {% endfor %}
+
+    <h3>Present Students</h3>
+    <img src="/static/uploads/result.jpg" width="640" height="480"/>
+</body>
+</html>
