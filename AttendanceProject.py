@@ -4,41 +4,32 @@ import face_recognition
 import os
 from datetime import datetime
 
-# import students automatically from BaseImagesOfStudents folder
-# path = 'BaseImagesOfStudents'
+# import students automatically from 'uploads/students' folder
 path = 'static/uploads'
 imagesOfStudents = []
 names_of_students = []
 students_present = []
-listWithJPGExtension = os.listdir(f'{path}/students')
+studentNamesWithJPGExtension = os.listdir(f'{path}/students')
 
 
 def folderHasImages():
     if len(os.listdir(f'{path}/students')) == 0:
-        print("Directory is empty")
+        print("Student directory is empty")
         return False
     else:
-        print("Directory is not empty")
+        print("Student directory is not empty")
         return True
 
 
 def getStudentNames():
     # go through BaseImagesOfStudents folder and grab names
-    for fileName in listWithJPGExtension:
+    for fileName in studentNamesWithJPGExtension:
         # Check for hidden files starting with '.'
         if not fileName.startswith('.'):
             currImg = cv2.imread(f'{path}/students/{fileName}')
             imagesOfStudents.append(currImg)
             # remove .jpg from name
             names_of_students.append(os.path.splitext(fileName)[0])
-
-
-def getImgSrc():
-    src_images = []
-    for file in os.listdir("BaseImagesOfStudents"):
-        if file.endswith(".jpg"):
-            src_images.append(file)
-    return src_images
 
 
 # find encodings for each image and put in encodeList
@@ -75,7 +66,6 @@ if folderHasImages():
     print(f'List of entire class: {names_of_students}')
     known_encodings = findEncodings(imagesOfStudents)
     print('Finished Encoding...')
-
 
     # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
     def processAttendance():
