@@ -25,10 +25,12 @@ def folderHasImages():
 def getStudentNames():
     # go through BaseImagesOfStudents folder and grab names
     for fileName in listWithJPGExtension:
-        currImg = cv2.imread(f'{path}/students/{fileName}')
-        imagesOfStudents.append(currImg)
-        # remove .jpg from name
-        names_of_students.append(os.path.splitext(fileName)[0])
+        # Check for hidden files starting with '.'
+        if not fileName.startswith('.'):
+            currImg = cv2.imread(f'{path}/students/{fileName}')
+            imagesOfStudents.append(currImg)
+            # remove .jpg from name
+            names_of_students.append(os.path.splitext(fileName)[0])
 
 
 def getImgSrc():
@@ -73,6 +75,7 @@ if folderHasImages():
     print(f'List of entire class: {names_of_students}')
     known_encodings = findEncodings(imagesOfStudents)
     print('Finished Encoding...')
+
 
     # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
     def processAttendance():
