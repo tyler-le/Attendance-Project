@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from flask import Flask, render_template, request
@@ -11,6 +12,11 @@ UPLOAD_FOLDER = '/Users/tylerle/Zoom-Attendance/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 dropzone = Dropzone(app)
+
+
+def parse_json():
+    file = open('data.json')
+    return json.load(file)
 
 
 @app.route('/uploads-students', methods=['GET', 'POST'])
@@ -47,7 +53,10 @@ def takeAttendance():
             filenames.append(os.path.join('static/uploads/students', filename))
     time.sleep(1)
     attendance()
-    return render_template('takeAttendance.html', filenames=filenames)
+    data = parse_json()
+    print("DATA")
+    print(data)
+    return render_template('takeAttendance.html', filenames=filenames, data=data)
 
 
 @app.after_request

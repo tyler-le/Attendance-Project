@@ -3,11 +3,13 @@ import numpy as np
 import face_recognition
 import os
 from datetime import datetime
+import json
 
 # import students automatically from 'uploads/students' folder
 path = 'static/uploads'
 imagesOfStudents = []
 students_present = []
+students_absent = []
 
 
 def folderHasImages():
@@ -20,8 +22,6 @@ def folderHasImages():
     if len(os.listdir(f'{path}/students')) == 0:
         return False
     else:
-        print(f'LENGTH IF THIS DIRECTORY IS: ')
-        print(len(os.listdir(f'{path}/students')))
         return True
 
 
@@ -51,23 +51,30 @@ def findEncodings(images):
     return listOfEncodings
 
 
-def markAttendance(studentName):
-    # open csv with rw permissions
-    with open('Attendance.csv', 'r+') as f:
-        myCSVList = f.readlines()
+# def markAttendance(studentName):
+#     # open csv with rw permissions
+#     with open('Attendance.csv', 'r+') as f:
+#         myCSVList = f.readlines()
+#
+#         # iterate through each line and split between commas
+#         for line in myCSVList:
+#             entry = line.split(',')
+#             # since it splits name and time, we want name list to only have first entry (name)
+#             students_present.append(entry[0])
+#
+#         # check if current name is present or not
+#         # if not present, then add current time into list
+#         if studentName not in students_present:
+#             now = datetime.now()
+#             dateString = now.strftime('%b %d at %I:%M %p')
+#         f.writelines(f'\n{studentName},{dateString}')
 
-        # iterate through each line and split between commas
-        for line in myCSVList:
-            entry = line.split(',')
-            # since it splits name and time, we want name list to only have first entry (name)
-            students_present.append(entry[0])
-
-        # check if current name is present or not
-        # if not present, then add current time into list
-        if studentName not in students_present:
-            now = datetime.now()
-            dateString = now.strftime('%b %d at %I:%M %p')
-        f.writelines(f'\n{studentName},{dateString}')
+def markAttendance(lst):
+    # Takes list of dictionaries and writes to file in correct JSON format.
+    with open('data.json', 'w+') as file:
+        str = json.dumps(lst)
+        file.write(str)
+        print(str)
 
 
 # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
@@ -103,7 +110,31 @@ def attendance():
                 cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
                 cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
                 cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
+                students_present.append(name)
+
                 # markAttendance(name)
     else:
         print('FOLDER IS EMPTY')
+
+    students_absent = list(set(names_of_students) - set(students_present))
+
+    # Is a list that holds dicts to be converted into JSON
+    json_dicts = []
+
+    for student in students_present:
+        entry = {
+            'name': student,
+            'present': True
+        }
+        json_dicts.append(entry)
+
+    for student in students_absent:
+        entry = {
+            'name': student,
+            'present': False
+        }
+        json_dicts.append(entry)
+
+    markAttendance(json_dicts)
     cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)
+
