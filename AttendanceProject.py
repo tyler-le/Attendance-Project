@@ -26,8 +26,8 @@ def folderHasImages():
 
 
 def getStudentNames():
-    names_of_students = []
     studentNamesWithJPGExtension = os.listdir(f'{path}/students')
+    names_of_students = []
 
     # go through BaseImagesOfStudents folder and grab names
     for fileName in studentNamesWithJPGExtension:
