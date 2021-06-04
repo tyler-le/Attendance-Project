@@ -1,18 +1,17 @@
 import os
 import time
-
 from flask import Flask, render_template, request
 from flask_dropzone import Dropzone
-# import AttendanceProject
-from AttendanceProject import processAttendance
+from AttendanceProject import attendance
 
 app = Flask(__name__, static_folder='static')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.config['TEMPLATES_AUTO_RELOAD']=True
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 UPLOAD_FOLDER = '/Users/tylerle/Zoom-Attendance/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 dropzone = Dropzone(app)
+
 
 @app.route('/uploads-students', methods=['GET', 'POST'])
 def uploads_students():
@@ -46,7 +45,8 @@ def takeAttendance():
     for filename in os.listdir('static/uploads/students'):
         if filename.endswith(".jpg"):
             filenames.append(os.path.join('static/uploads/students', filename))
-    processAttendance()
+    time.sleep(1)
+    attendance()
     return render_template('takeAttendance.html', filenames=filenames)
 
 

@@ -7,21 +7,28 @@ from datetime import datetime
 # import students automatically from 'uploads/students' folder
 path = 'static/uploads'
 imagesOfStudents = []
-names_of_students = []
 students_present = []
-studentNamesWithJPGExtension = os.listdir(f'{path}/students')
 
 
 def folderHasImages():
+    # Need to delete .DS_Store that randomly appears in the folder and causes bugs
+    try:
+        os.remove(f'{path}/students/.DS_Store')
+    except:
+        pass
+
     if len(os.listdir(f'{path}/students')) == 0:
-        print("Student directory is empty")
         return False
     else:
-        print("Student directory is not empty")
+        print(f'LENGTH IF THIS DIRECTORY IS: ')
+        print(len(os.listdir(f'{path}/students')))
         return True
 
 
 def getStudentNames():
+    names_of_students = []
+    studentNamesWithJPGExtension = os.listdir(f'{path}/students')
+
     # go through BaseImagesOfStudents folder and grab names
     for fileName in studentNamesWithJPGExtension:
         # Check for hidden files starting with '.'
@@ -30,6 +37,8 @@ def getStudentNames():
             imagesOfStudents.append(currImg)
             # remove .jpg from name
             names_of_students.append(os.path.splitext(fileName)[0])
+
+    return names_of_students
 
 
 # find encodings for each image and put in encodeList
@@ -61,17 +70,14 @@ def markAttendance(studentName):
         f.writelines(f'\n{studentName},{dateString}')
 
 
-if folderHasImages():
-    getStudentNames()
-    print(f'List of entire class: {names_of_students}')
-    known_encodings = findEncodings(imagesOfStudents)
-    print('Finished Encoding...')
-
-    # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
-    def processAttendance():
-        # img = cv2.imread(f'{path}/class.jpg')
-        # img = cv2.imread('ScreenshotOfZoomClassForAttendance/class.jpg')
-        img = cv2.imread(f'{path}/class/class.jpg')
+# CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
+def attendance():
+    img = cv2.imread(f'{path}/class/class.jpg')
+    if folderHasImages():
+        names_of_students = getStudentNames()
+        print(f'List of entire class: {names_of_students}')
+        known_encodings = findEncodings(imagesOfStudents)
+        print('Finished Encoding...')
 
         # find face location and send each location to encoding
         faces_at_current_frame = face_recognition.face_locations(img)
@@ -98,5 +104,6 @@ if folderHasImages():
                 cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
                 cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
                 # markAttendance(name)
-
-            cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)
+    else:
+        print('FOLDER IS EMPTY')
+    cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)
