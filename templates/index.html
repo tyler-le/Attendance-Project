@@ -11,19 +11,27 @@
 <body>
 <header><h1>Zoom Attendance</h1></header>
 <div class="container">
-    <h1>Instructions</h1>
-    <ol type="1">
-        <li>Gather each individual student's image and rename each as "&lt;student name&gt;.jpg"</li>
-        <li>Take a screenshot of your entire Zoom class and rename it "class.jpg"</li>
-        <li>Drag and drop all student's images and class.jpg where specified</li>
-        <li>Press 'Take Attendance'</li>
-    </ol>
+    <div class="instructions">
+        <h1>Instructions</h1>
+        <ol type="1">
+            <li>Gather each individual student's image and rename each as "&lt;student name here&gt;.jpg"</li>
+            <li>Take a screenshot of your entire Zoom class and rename it "class.jpg"</li>
+            <li>Drag and drop all student's images and class.jpg where specified</li>
+            <li>Press 'Take Attendance'</li>
+        </ol>
+    </div>
 
-    <h1>Drag and drop all student's images here</h1>
-    {{ dropzone.create(action='/uploads-students') }}
+    <div class="upload">
+        <h1>Drag and drop all student's images here</h1>
+        {{ dropzone.create(action='/uploads-students') }}
 
-    <h1>Drag and drop image of zoom class here</h1>
-    {{ dropzone.create(action='/uploads-class') }}
+        <h1>Drag and drop image of zoom class here</h1>
+        {{ dropzone.create(action='/uploads-class') }}
+
+    </div>
+
+
+
 
     {{ dropzone.load_js() }}
     {{ dropzone.config() }}

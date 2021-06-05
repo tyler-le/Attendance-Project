@@ -18,6 +18,19 @@ text-align: center;
 margin: 50px 0px;
 }
 
+.instructions{
+    margin: 25px 0px;
+    line-height:1.6
+}
+
+
+button{
+font-size:20px;
+padding: 5px 15px;
+margin-top: 15px;
+
+}
+
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
@@ -39,8 +52,18 @@ tr:nth-child(even) {
 grid-area:all-students;
 }
 
+.all-students img{
+width:100px;
+height:100px;
+}
+
 .result{
 grid-area:result
+}
+
+.result img{
+    width: 480px;
+    height: 360px;
 }
 
 .table{
@@ -54,4 +77,37 @@ grid-template-columns: 1fr 1fr;
     grid-template-areas:
     "all-students result"
     "table table";
+}
+
+@media screen and (max-width: 1024px) {
+    .grid-container{
+        grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1.5fr 1.5fr;
+            grid-template-areas:
+            "all-students"
+            "result"
+            "table";
+    }
+    .result{
+        margin-bottom:20px;
+    }
+}
+
+@media screen and (max-width: 736px) {
+header h1{
+    text-align: center;
+    margin: 20px 0px;
+}
+
+.container{
+    margin: 0px 0px;
+    background: #F6F7F9;
+    padding: 0px 0px;
+}
+
+.result img{
+    height:auto;
+    width: 100%;
+}
+
 }
