@@ -1,15 +1,20 @@
+import csv
+
 import cv2
 import numpy as np
 import face_recognition
 import os
-from datetime import datetime
+from datetime import date
 import json
+import pandas as pd
 
 # import students automatically from 'uploads/students' folder
 path = 'static/uploads'
 imagesOfStudents = []
 students_present = []
 students_absent = []
+json_dicts = []
+date = date.today().strftime("%m/%d/%Y")
 
 
 def folderHasImages():
@@ -51,30 +56,15 @@ def findEncodings(images):
     return listOfEncodings
 
 
-# def markAttendance(studentName):
-#     # open csv with rw permissions
-#     with open('Attendance.csv', 'r+') as f:
-#         myCSVList = f.readlines()
-#
-#         # iterate through each line and split between commas
-#         for line in myCSVList:
-#             entry = line.split(',')
-#             # since it splits name and time, we want name list to only have first entry (name)
-#             students_present.append(entry[0])
-#
-#         # check if current name is present or not
-#         # if not present, then add current time into list
-#         if studentName not in students_present:
-#             now = datetime.now()
-#             dateString = now.strftime('%b %d at %I:%M %p')
-#         f.writelines(f'\n{studentName},{dateString}')
-
 def markAttendance(lst):
-    # Takes list of dictionaries and writes to file in correct JSON format.
-    with open('data.json', 'w+') as file:
+    # Takes list of dictionaries and writes to JSON file.
+    with open('static/data/data.json', 'w+') as file:
         str = json.dumps(lst)
         file.write(str)
-        print(str)
+
+    # Takes that JSON file and converts to CSV file.
+    df = pd.read_json(r'static/data/data.json')
+    df.to_csv(r'static/data/data.csv', index=None)
 
 
 # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
@@ -119,22 +109,22 @@ def attendance():
     students_absent = list(set(names_of_students) - set(students_present))
 
     # Is a list that holds dicts to be converted into JSON
-    json_dicts = []
 
     for student in students_present:
         entry = {
             'name': student,
-            'present': True
+            'present': True,
+            'date': date
         }
         json_dicts.append(entry)
 
     for student in students_absent:
         entry = {
             'name': student,
-            'present': False
+            'present': False,
+            'date': date
         }
         json_dicts.append(entry)
 
     markAttendance(json_dicts)
     cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)
-

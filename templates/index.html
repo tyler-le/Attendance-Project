@@ -5,24 +5,29 @@
   <title>Zoomy | Upload Images</title>
   {{ dropzone.load_css() }}
   {{ dropzone.style('border: 2px dashed #0087F7; margin: 1%; min-height: 200px') }}
+    <link rel="stylesheet" href="../static/styles/style.css">
+
 </head>
 <body>
-<h1>Instructions</h1>
-<ol type="1">
-    <li>Gather each individual student's image and rename each as "&lt;student name&gt;.jpg"</li>
-    <li>Take a screenshot of your entire Zoom class and rename it "class.jpg"</li>
-    <li>Drag and drop all student's images and class.jpg where specified</li>
-    <li>Press 'Take Attendance'</li>
-</ol>
+<header><h1>Zoom Attendance</h1></header>
+<div class="container">
+    <h1>Instructions</h1>
+    <ol type="1">
+        <li>Gather each individual student's image and rename each as "&lt;student name&gt;.jpg"</li>
+        <li>Take a screenshot of your entire Zoom class and rename it "class.jpg"</li>
+        <li>Drag and drop all student's images and class.jpg where specified</li>
+        <li>Press 'Take Attendance'</li>
+    </ol>
 
     <h1>Drag and drop all student's images here</h1>
-  {{ dropzone.create(action='/uploads-students') }}
+    {{ dropzone.create(action='/uploads-students') }}
 
     <h1>Drag and drop image of zoom class here</h1>
-  {{ dropzone.create(action='/uploads-class') }}
+    {{ dropzone.create(action='/uploads-class') }}
 
-  {{ dropzone.load_js() }}
-  {{ dropzone.config() }}
-  <a href="/takeAttendance.html"><button>Take Attendance</button></a>
+    {{ dropzone.load_js() }}
+    {{ dropzone.config() }}
+    <a href="/takeAttendance.html"><button>Take Attendance</button></a>
+</div>
 </body>
 </html>

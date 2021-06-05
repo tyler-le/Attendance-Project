@@ -1,12 +1,57 @@
+*{
+padding:0;
+margin:0;
+}
 
 body{
-background: blue
-color: red
+background: #323333;
 }
 
-img{
-    display: inline
-    width: 200px
-    height: 200px
+.container{
+margin: 0px 100px;
+background: white;
+padding: 35px 50px;
 }
 
+header h1{
+text-align: center;
+margin: 50px 0px;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+
+.all-students{
+grid-area:all-students;
+}
+
+.result{
+grid-area:result
+}
+
+.table{
+grid-area:table;
+}
+
+.grid-container{
+display:grid;
+grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1.2fr 2fr;
+    grid-template-areas:
+    "all-students result"
+    "table table";
+}

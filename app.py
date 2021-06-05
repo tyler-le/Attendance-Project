@@ -15,7 +15,7 @@ dropzone = Dropzone(app)
 
 
 def parse_json():
-    file = open('data.json')
+    file = open('static/data/data.json')
     return json.load(file)
 
 
@@ -52,10 +52,8 @@ def takeAttendance():
         if filename.endswith(".jpg"):
             filenames.append(os.path.join('static/uploads/students', filename))
     time.sleep(1)
-    attendance()
+    # attendance()
     data = parse_json()
-    print("DATA")
-    print(data)
     return render_template('takeAttendance.html', filenames=filenames, data=data)
 
 
