@@ -52,7 +52,7 @@ def takeAttendance():
         if filename.endswith(".jpg"):
             filenames.append(os.path.join('static/uploads/students', filename))
     time.sleep(1)
-    # attendance()
+    attendance()
     data = parse_json()
     return render_template('takeAttendance.html', filenames=filenames, data=data)
 

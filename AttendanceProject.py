@@ -99,7 +99,7 @@ def attendance():
 
                 cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
                 cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
-                cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 3)
+                cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, .75, (0, 0, 255), 2)
                 students_present.append(name)
 
                 # markAttendance(name)
