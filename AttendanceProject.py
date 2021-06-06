@@ -10,14 +10,14 @@ import pandas as pd
 
 # import students automatically from 'uploads/students' folder
 path = 'static/uploads'
-imagesOfStudents = []
+images_of_students = []
 students_present = []
 students_absent = []
 json_dicts = []
 date = date.today().strftime("%m/%d/%Y")
 
 
-def folderHasImages():
+def folder_has_images():
     # Need to delete .DS_Store that randomly appears in the folder and causes bugs
     try:
         os.remove(f'{path}/students/.DS_Store')
@@ -31,32 +31,32 @@ def folderHasImages():
 
 
 def get_student_names():
-    studentNamesWithJPGExtension = os.listdir(f'{path}/students')
+    student_names_with_jpg_extension = os.listdir(f'{path}/students')
     names_of_students = []
 
     # go through BaseImagesOfStudents folder and grab names
-    for fileName in studentNamesWithJPGExtension:
+    for filename in student_names_with_jpg_extension:
         # Check for hidden files starting with '.'
-        if not fileName.startswith('.'):
-            currImg = cv2.imread(f'{path}/students/{fileName}')
-            imagesOfStudents.append(currImg)
+        if not filename.startswith('.'):
+            curr_img = cv2.imread(f'{path}/students/{filename}')
+            images_of_students.append(curr_img)
             # remove .jpg from name
-            names_of_students.append(os.path.splitext(fileName)[0])
+            names_of_students.append(os.path.splitext(filename)[0])
 
     return names_of_students
 
 
 # find encodings for each image and put in encodeList
-def findEncodings(images):
-    listOfEncodings = []
+def find_encodings(images):
+    list_of_encodings = []
     for image in images:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         encoding = face_recognition.face_encodings(image)[0]
-        listOfEncodings.append(encoding)
-    return listOfEncodings
+        list_of_encodings.append(encoding)
+    return list_of_encodings
 
 
-def markAttendance(lst):
+def mark_attendance(lst):
     # Takes list of dictionaries and writes to JSON file.
     with open('static/data/data.json', 'w+') as file:
         str = json.dumps(lst)
@@ -70,10 +70,10 @@ def markAttendance(lst):
 # CSV FILE IS BROKEN SINCE I REMOVED WHILE TRUE
 def attendance():
     img = cv2.imread(f'{path}/class/class.jpg')
-    if folderHasImages():
+    if folder_has_images():
         names_of_students = get_student_names()
         print(f'List of entire class: {names_of_students}')
-        known_encodings = findEncodings(imagesOfStudents)
+        known_encodings = find_encodings(images_of_students)
         print('Finished Encoding...')
 
         # find face location and send each location to encoding
@@ -102,7 +102,7 @@ def attendance():
                 cv2.putText(img, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_COMPLEX, .75, (0, 0, 255), 2)
                 students_present.append(name)
 
-                # markAttendance(name)
+                # mark_attendance(name)
     else:
         print('FOLDER IS EMPTY')
 
@@ -126,5 +126,5 @@ def attendance():
         }
         json_dicts.append(entry)
 
-    markAttendance(json_dicts)
+    mark_attendance(json_dicts)
     cv2.imwrite(os.path.join(f'{path}/result', 'result.jpg'), img)

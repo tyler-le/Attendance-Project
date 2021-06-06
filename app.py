@@ -6,10 +6,12 @@ from flask_dropzone import Dropzone
 from AttendanceProject import attendance
 
 app = Flask(__name__, static_folder='static')
+UPLOAD_FOLDER = 'static/uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-UPLOAD_FOLDER = '/Users/tylerle/Zoom-Attendance/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['DROPZONE_ALLOWED_FILE_TYPE'] = 'image'
+
 
 dropzone = Dropzone(app)
 
@@ -46,7 +48,7 @@ def results():
 
 
 @app.route("/takeAttendance.html", methods=['GET', 'POST'])
-def takeAttendance():
+def take_attendance():
     filenames = []
     for filename in os.listdir('static/uploads/students'):
         if filename.endswith(".jpg"):
