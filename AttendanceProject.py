@@ -30,7 +30,7 @@ def folderHasImages():
         return True
 
 
-def getStudentNames():
+def get_student_names():
     studentNamesWithJPGExtension = os.listdir(f'{path}/students')
     names_of_students = []
 
@@ -71,7 +71,7 @@ def markAttendance(lst):
 def attendance():
     img = cv2.imread(f'{path}/class/class.jpg')
     if folderHasImages():
-        names_of_students = getStudentNames()
+        names_of_students = get_student_names()
         print(f'List of entire class: {names_of_students}')
         known_encodings = findEncodings(imagesOfStudents)
         print('Finished Encoding...')
